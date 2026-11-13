@@ -1,40 +1,42 @@
-MADA JOBS — VERSION COLORÉE ET CONNECTÉE À SUPABASE
-=====================================================
+MADA JOBS — VERSION COLORÉE + ESPACE ENTREPRISES
+================================================
 
 CONTENU
-- index.html : site web responsive, style coloré et élégant.
-- SUPABASE-SETUP.sql : fonctions SQL nécessaires aux missions et retraits simulés.
-- LISEZ-MOI.txt : ce guide.
+- index.html : site responsive avec connexion Supabase, missions, espace membre et espace entreprise.
+- SUPABASE-SETUP.sql : tables, règles de sécurité, stockage des preuves et crédits après validation.
+- LISEZ-MOI.txt : guide d’installation.
 
-IMPORTANT
-Les soldes et récompenses sont virtuels. Les demandes de retrait sont des simulations : aucun argent réel n'est envoyé.
-La clé intégrée dans index.html est une clé publishable (publique), jamais une clé service_role.
+NOUVEAUTÉS
+1. À l’inscription, choisir Membre ou Entreprise.
+2. Les membres peuvent partager https://etienne16-blik.github.io/mada-jobs/ sur un réseau social et envoyer une capture d’écran.
+3. Les membres peuvent regarder les vidéos sponsorisées actives (lien MP4 direct). Le visionnage reste en attente de vérification.
+4. Les entreprises peuvent créer une campagne et envoyer une preuve de paiement MVola.
+5. Paiement publicitaire affiché : 0382830494 — Marolahy. Chaque campagne reçoit une référence unique affichée dans l’espace entreprise.
 
-1) EXTRAIRE LE ZIP
-Extrais le ZIP sur ton téléphone ou ordinateur.
+IMPORTANT — À LIRE AVANT UTILISATION
+- Les paiements MVola sont manuels : cette version ne déclenche pas automatiquement un transfert MVola et ne vérifie pas l’argent reçu.
+- Les campagnes doivent être contrôlées et activées manuellement par l’administrateur dans Supabase.
+- Les captures de partage et les visionnages sont en attente. Pour créditer une récompense, l’administrateur doit ouvrir Supabase > Table Editor et changer le statut de la ligne concernée en approved. Le déclencheur SQL crédite alors le portefeuille.
+- Les récompenses du portefeuille restent virtuelles. Les demandes de retrait de la version actuelle sont simulées : aucun retrait réel n’est envoyé.
+- Le visionnage d’une vidéo est détecté à la fin du fichier vidéo dans le navigateur, mais cela ne prouve pas à lui seul qu’une personne a réellement regardé. Vérifie les demandes avant de créditer.
+- Utilise des vidéos dont ton entreprise ou l’annonceur possède les droits. Ne rémunère pas les clics ou vues artificiels sur les publicités d’autres plateformes.
 
-2) CONFIGURER SUPABASE
-Dans Supabase, ouvre SQL Editor, colle le contenu de SUPABASE-SETUP.sql puis clique Run.
-Le script crée les fonctions RPC nécessaires. Il ajoute aussi cinq missions si la table tasks est vide.
-Vérifie dans Authentication que le fournisseur Email est activé.
+INSTALLATION / MISE À JOUR
+1. Extrais ce ZIP.
+2. Dans Supabase > SQL Editor, exécute le fichier SUPABASE-SETUP.sql en entier. Fais une sauvegarde avant si la base contient déjà des données importantes.
+3. Dans GitHub, ouvre le dépôt et remplace les fichiers index.html, SUPABASE-SETUP.sql et LISEZ-MOI.txt à la racine par ceux de ce ZIP. N’envoie pas uniquement le ZIP.
+4. Clique Commit changes et attends la fin du déploiement GitHub Pages.
+5. Dans Supabase > Authentication > URL Configuration, vérifie que l’adresse https://etienne16-blik.github.io/mada-jobs/ est dans Site URL et Redirect URLs.
+6. Les nouveaux comptes doivent choisir Membre ou Entreprise à l’inscription. Un compte déjà créé garde son ancien type ; crée un nouveau compte pour tester l’espace Entreprise.
 
-3) PUBLIER SUR GITHUB
-Dans ton dépôt GitHub, choisis Add file > Upload files.
-Envoie directement à la racine du dépôt les fichiers index.html, LISEZ-MOI.txt et SUPABASE-SETUP.sql (pas le ZIP).
-Valide avec Commit changes.
-Dans Settings > Pages, choisis Deploy from a branch, branche main, dossier /(root), puis Save.
-Attends que GitHub Pages affiche l'adresse du site.
+VALIDATION ADMINISTRATEUR
+- Campagnes : public.ad_campaigns. Vérifie le paiement MVola et le contenu, puis passe status à active pour publier ou rejected pour refuser.
+- Preuves de partage : public.promotion_proofs. Consulte la capture dans Storage > mada-jobs-proofs, puis passe status à approved ou rejected.
+- Visionnages : public.video_views. Vérifie la demande, puis passe status à approved ou rejected.
+- Le statut approved crédite automatiquement la récompense correspondante dans profiles et wallet_transactions.
+- Les preuves sont dans le bucket privé mada-jobs-proofs. Les fichiers sont organisés par type puis par identifiant utilisateur.
 
-4) URL DANS SUPABASE
-Dans Authentication > URL Configuration, définis Site URL avec l'adresse GitHub Pages.
-Ajoute aussi cette adresse dans Redirect URLs.
-
-5) TEST
-Ouvre le site publié en HTTPS. Crée un compte de test puis connecte-toi.
-Si l'inscription demande une confirmation e-mail, confirme le message avant la connexion.
-
-DÉPANNAGE
-- "Aucune mission active" : vérifie que les cinq lignes ont été ajoutées dans public.tasks et que active = true.
-- Erreur de fonction : relance SUPABASE-SETUP.sql dans SQL Editor.
-- Page blanche : vérifie que index.html est bien à la racine du dépôt et que le navigateur a une connexion Internet.
-- Ne communique jamais ton mot de passe Supabase ni une clé service_role.
+SÉCURITÉ
+- Ne mets jamais une clé service_role dans index.html.
+- Ne demande jamais aux membres leur mot de passe MVola.
+- La clé Supabase publishable dans index.html est publique ; la sécurité dépend des politiques RLS du SQL.
